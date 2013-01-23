@@ -116,7 +116,7 @@ review"
   (let [response (client/get (fisheye-url "revisionData-v1" "changeset" (:repository options) id) options)
         response-seq (xml-parse-str (:body  response))
         comment (first (extract-tag response-seq :comment))
-        name (subs comment 0 (min 80 (count comment)))]       ; there is no lines in the comment
+        name (first (clojure.string/split comment #"\n"))]      ; First line in the comment
     {:name name :description comment}))
 
 (defn- make-review-request
