@@ -68,10 +68,10 @@ and let it in the draft state. Returns the review id"
 
         response (client/post (crucible-url "reviews-v1")
                                 (merge options
-                                       {:body request
+                                       {:body request-xml
                                         :content-type :xml}))
         response-seq (-> response :body xml-parse-str)
-        id (first (extract-tag response :permaId))]
+        id (first (extract-tag response-seq :id))]
     id))
 
 (defn add-reviewers
