@@ -109,6 +109,11 @@ review"
   ^{:doc "Given the review id, it summarizes a review
  that has been complete by all the reviewers"}
   (partial action-review "action:summarizeReview"))
+
+(def close-review
+  ^{:doc "Given the review id, it closes a review in summarize state
+ that has been complete by all the reviewers "}
+  (partial action-review "action:closeReview"))
                                        
 (defn get-changeset
   "Given the changeset id, it returns the details of this changeset from Fisheye"
@@ -186,3 +191,9 @@ review"
    (print-reviews (get-all-reviews "outForReview"))))
 
 
+(defn close-all-summarized 
+"Close all the reviews in summarized state"
+[]
+(doseq [{:keys [id]} (get-all-reviews "toSummarize")]
+  (summarize-review id)
+  (close-review id)))
