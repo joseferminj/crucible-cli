@@ -170,11 +170,23 @@ review"
         names (extract-tag response-seq :name)]
     (map #(zipmap [:id :name] [%1 %2]) ids names)))
 
+(defn get-comments-by-review
+  "Returns all comments in the review"
+  [id]
+  (let [response (client/get (crucible-url "reviews-v1" id "comments?render=true") options)
+        response-seq (-> response :body xml-parse-str)
+        status (extract-tag response-seq :readStatus)
+        messages (extract-tag response-seq :message)
+        usernames (extract-tag response-seq :userName)]
+    (map #(zipmap [:readStatus :message :username] [%1 %2 %3]) status messages usernames)))
+
 (defn- print-reviews
   "Print a review in the output. For each review, the id and the name is shown"
   [coll]
   (doseq [{:keys [id name]} coll]
-    (println (str "\t" id "\t" name))))
+    (let [comments (get-comments-by-review id)
+          unread (filter #(= (% :readStatus) "READ") comments)]
+      (println (str "\t(" (count unread) "/" (count comments) ") " id "\t" name)))))
 
 (defn show-status
   "Shows the status of the reviews for the given user"
