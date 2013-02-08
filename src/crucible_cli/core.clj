@@ -144,9 +144,16 @@ review"
         [:id {} changeset-id]]
        [:repository {} (:repository options)]]]))
 
+(defn- match-with-alias
+  "Try to match a vector with key with the alias in the configuration (options map). It returns the alias values joined by ','"
+  [reviewers]
+  (if (vector? reviewers)
+    (->> reviewers (map #(% (options :alias))) (clojure.string/join ","))
+    reviewers))
+
 (defn create-review
   "Create a review in Crucible. The review will be in STARTED state and the reviewers included"  
-  ([changeset-id reviewers] (create-review changeset-id reviewers options))
+  ([changeset-id reviewers] (create-review changeset-id (match-with-alias reviewers) options))
   ([changeset-id reviewers options] (let [user-id (-> options :basic-auth (get 0))]
                                       (create-review user-id changeset-id reviewers options)))
   ([user-id changeset-id reviewers options]
