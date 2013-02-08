@@ -216,3 +216,8 @@ review"
 (doseq [{:keys [id]} (get-all-reviews "toSummarize")]
   (summarize-review id)
   (close-review id)))
+
+(defn open-review
+"Open a review in the browser"
+[id]
+(clojure.java.browse/browse-url  (get-url "cru" id)))
