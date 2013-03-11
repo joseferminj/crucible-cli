@@ -5,6 +5,7 @@
             [clojure.data.xml :as dxml]
             [clj-http.client :as client]))
 
+
 ;;; The configuration file is stored in ~/crucible-cli
 ;;; The format of the configuration file is edn (clojure code)
 
@@ -14,12 +15,23 @@
   (with-open [r (io/reader filename)]
     (read (java.io.PushbackReader. r))))
 
+(defn get-pwd-from-keychain
+  [basic-auth]
+  (let [keychain (com.mcdermottroe.apple.OSXKeychain/getInstance)]
+    (try
+      (conj basic-auth (.findGenericPassword keychain "crucible-cli" (first basic-auth)))
+      (catch com.mcdermottroe.apple.OSXKeychainException e1 (throw (IllegalArgumentException. (str "The item 'crucible-cli' could not be found in the keychain for user " (first basic-auth) " .Open Keychain Access and create a new item")))))))
+
 (defn load-config
   "Loads the configuration file in ~/.crucible-cli"
   []
   (let [filename (str (System/getProperty "user.home") "/" ".crucible-cli")
-        config (load-config-file filename)]
-    config))
+        config (load-config-file filename)
+        auth (:basic-auth config)
+        basic-auth (if (= 2 (count auth))
+                     auth
+                     (get-pwd-from-keychain auth))]
+    (assoc config :basic-auth basic-auth)))
 
 (def options (load-config))
 
