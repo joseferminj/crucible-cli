@@ -5,7 +5,7 @@ using the web interface
 
 ## Installation
 
-Clone the project and starts the REPL with leiningen 
+Clone the project and starts the REPL with leiningen
 ```
 lein repl
 ```
@@ -39,7 +39,7 @@ Creates a review for the changeset 31743be where the users
   of the review will be automatically retrieved from the comment of
   the changeSet
 
-### Show the status of the reviews 
+### Show the status of the reviews
 
 ```clojure
 (show-status)
@@ -62,10 +62,4 @@ Out For Review:
       ids (map :id r)]
   (map summarize-review ids))
 ```
-
-
-
-
-
-
-
+### Future
